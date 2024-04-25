@@ -1,0 +1,30 @@
+{
+  "products": [
+    {
+      "title": "Pizza 1",
+      "description": "Tempor ipsum ex sit reprehenderit esse sit dolore deserunt dolore aliquip aliquip quis incididunt elit.",
+      "isNew": true, 
+      "image": "https://img.freepik.com/free-photo/top-view-pepperoni-pizza-with-mushroom-sausages-bell-pepper-olive-corn-black-wooden_141793-2158.jpg",
+      "price": 100,
+      "oldPrice": 200,
+      "id": 0
+    },
+    {
+      "title": "Pizza 2",
+      "description": "Id ex proident duis velit ex officia amet amet exercitation duis.",
+      "isNew": false, 
+      "image": "https://img.freepik.com/free-photo/top-view-pepperoni-pizza-with-mushroom-sausages-bell-pepper-olive-corn-black-wooden_141793-2158.jpg",
+      "price": 50,
+      "oldPrice": 100,
+      "id": 1
+    },
+    {
+      "title": "Pizza 3",
+      "description": "Labore ex laboris minim ullamco labore cillum enim dolor nisi culpa amet occaecat pariatur deserunt.",
+      "isNew": false, 
+      "image": "https://img.freepik.com/free-photo/top-view-pepperoni-pizza-with-mushroom-sausages-bell-pepper-olive-corn-black-wooden_141793-2158.jpg",
+      "price": 40,
+      "id": 2
+    }
+  ]
+}

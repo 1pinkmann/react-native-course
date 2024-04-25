@@ -1,0 +1,60 @@
+#!/bin/bash -e
+
+SELF=$(readlink -f $0)
+BIN=$(dirname $SELF)
+ROOT=$(dirname $BIN)
+
+LOCAL_DATA="$(wslpath -u $(cmd.exe /c 'echo %APPDATA%' 2>/dev/null | dos2unix | tr '\\' // | sed 's/Roaming/Local/g'))"
+SDK="$LOCAL_DATA/android/Sdk"
+WSL_IP_ADDR=$(ifconfig eth0 | awk '/inet[^6]/ { print $2 }')
+
+if [[ ! -d $SDK ]]
+then
+  echo "Android SDK must be installed on Windows, and it must be found at: $(wslpath -w "$SDK")"
+  exit 1
+fi
+
+if [[ $1 = -d ]]
+then
+  shift
+  ($0 "$@" > /tmp/emu.log 2>&1 &)
+  exit 0
+fi
+
+# This cd simply prevents warnings about pwd being a UNC path like \\wsl$\Ubuntu\whatever
+cd $LOCAL_DATA
+
+if [[ $1 = portproxy ]]
+then
+  netsh.exe interface portproxy delete v4tov4 listenport=8081 listenaddress=127.0.0.1 2>&1 > /dev/null || true
+  netsh.exe interface portproxy add v4tov4 listenport=8081 listenaddress=127.0.0.1 connectport=8081 connectaddress=$WSL_IP_ADDR
+  exit
+fi
+
+# This runs the WINDOWS installed version of adb
+function adb() {
+  $SDK/platform-tools/adb.exe "$@"
+}
+
+function d() {
+ adb devices |
+    sed -e 1d \
+        -e '/^[[:space:]]*$/d' |
+    awk '{ printf "%s.%s\n", $1, $2 }'
+}
+
+n=$(d | wc -l)
+if [[ $n -ne 0 ]]
+then
+  echo "There are already some devices running"
+  adb devices
+  exit 1
+fi
+
+if ! netsh.exe interface portproxy show all | grep -q "$WSL_IP_ADDR.*8081"
+then
+  $BIN/wudo $SELF portproxy
+fi
+
+avd=$($SDK/emulator/emulator.exe -list-avds | dos2unix | head -1)
+$SDK/emulator/emulator.exe -avd "$avd"
