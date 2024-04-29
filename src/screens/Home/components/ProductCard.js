@@ -1,25 +1,29 @@
 import React, { useState } from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
-
+import { colors } from '../../../constants';
+import HeartButton from '../../../components/HeartButton';
 
 export default function ProductCard({ product, style }) {
   const [saved, setSaved] = useState(false);
 
-  function toggleSaved () {
+  function toggleSaved() {
     setSaved(!saved);
   }
 
   return (
     <View style={[styles.container, style]}>
       <View style={styles.imageWrapper}>
+        {product.isNew &&
+          <View style={styles.badge}>
+            <Text style={styles.badgeText}>New</Text>
+          </View>
+        }
         <Image style={styles.image} source={{ uri: product.image }} />
       </View>
       <View style={styles.wrapper}>
         <Text style={styles.title}>{product.title}</Text>
-        <Pressable style={styles.button} onPress={toggleSaved}>
-          <AntDesign name="heart" size={24} color={saved ? 'red' : 'black'} />
-        </Pressable>
+        <HeartButton onPress={toggleSaved} active={saved} />
         <View style={styles.priceWrapper}>
           <Text style={styles.price}>{product.price}</Text>
           {product.oldPrice &&
@@ -43,11 +47,11 @@ const styles = StyleSheet.create({
     padding: 15,
     marginHorizontal: 15,
     marginBottom: 20,
-    borderColor: '#e6e6e6',
+    borderColor: colors.BORDER,
     borderWidth: 1,
     borderStyle: 'solid',
     borderRadius: 8,
-    backgroundColor: '#f8f0f0',
+    backgroundColor: colors.PRODUCT_CARD_BG,
     elevation: 5,
     shadowColor: '#000000',
     shadowRadius: 5,
@@ -94,7 +98,23 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: 150
   },
-  buttonText: {
-
+  badge: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 30,
+    height: 30,
+    position: 'absolute',
+    top: -10,
+    right: -10,
+    backgroundColor: colors.GREY,
+    borderRadius: 50,
+    zIndex: 2,
+    elevation: 5,
+    shadowColor: '#000000',
+    shadowRadius: 5,
+    shadowOpacity: 0.15
+  },
+  badgeText: {
+    fontSize: 10
   }
 });

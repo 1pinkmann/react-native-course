@@ -1,23 +1,83 @@
-import React from 'react'
-import { ScrollView, StyleSheet } from 'react-native'
-import { products } from '../../../../data/products.json';
+import React, { useState } from 'react'
+import { FlatList, StyleSheet, TextInput, View } from 'react-native'
 import ProductCard from './ProductCard';
+import usePizzas from '../hooks/usePizzas';
+import CustomPressable from '../../../components/CustomPressable';
+import { AntDesign } from '@expo/vector-icons';
+import { colors } from '../../../constants';
+import HeartButton from '../../../components/HeartButton';
+import ModalWindow from './ModalWindow';
+import useSearch from '../hooks/useSearch';
+import FiltersModal from './FiltersModal';
 
 export default function Products() {
+  const [modalVisible, setModalVisible] = useState(false);
+  const [filterModalVisible, setFilterModalVisible] = useState(false);
+  const [checked, setChecked] = useState(false);
+  const { search, setSearch, searchVisible, toggleSearchVisible, handleFilter, filters } = useSearch();
+  const { products } = usePizzas(search, filters);
+
+  function toggleModalVisible() {
+    setModalVisible(!modalVisible);
+  }
+
+  function toggleFiltersModalVisible() {
+    setFilterModalVisible((state) => {
+      if (state) {
+        handleFilter(checked, 'isNew', true)
+      }
+      return !state;
+    });
+  }
+
   return (
-    <ScrollView style={styles.container}>
-      {products.map(product => {
-        return (
-          <ProductCard product={product} key={product.id} />
-        );
-      })}
-    </ScrollView>
+    <View style={styles.container}>
+      <View style={styles.inputWrapper}>
+        {searchVisible &&
+          <TextInput value={search} onChangeText={setSearch} placeholder="Search..." style={styles.input} />
+        }
+        <HeartButton style={styles.searchButton} onPress={toggleModalVisible} active={true} />
+        <CustomPressable style={styles.searchButton} onPress={toggleFiltersModalVisible}>
+          <AntDesign name="filter" size={24} />
+        </CustomPressable>
+        <CustomPressable style={styles.searchButton} onPress={toggleSearchVisible}>
+          <AntDesign name="search1" size={24} />
+        </CustomPressable>
+      </View>
+      <FlatList
+        data={products}
+        renderItem={({ item }) => <ProductCard product={item} key={item.id} />}
+      />
+      <ModalWindow modalVisible={modalVisible} toggleModalVisible={toggleModalVisible} />
+      <FiltersModal checked={checked} setChecked={setChecked} modalVisible={filterModalVisible} toggleModalVisible={toggleFiltersModalVisible} />
+    </View>
   )
 }
 
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    paddingTop: 15
+    flex: 1,
+    paddingTop: 35
+  },
+  inputWrapper: {
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    flexDirection: 'row',
+    marginHorizontal: 15,
+    marginBottom: 20
+  },
+  input: {
+    flex: 1,
+    paddingHorizontal: 15,
+    borderColor: colors.BORDER,
+    borderWidth: 1,
+    backgroundColor: colors.GREY,
+    borderRadius: 5,
+    height: '100%'
+  },
+  searchButton: {
+    marginLeft: 10
   }
 });

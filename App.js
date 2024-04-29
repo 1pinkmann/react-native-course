@@ -1,11 +1,16 @@
 import { Platform, SafeAreaView, StatusBar, StyleSheet } from 'react-native';
 import Home from './src/screens/Home/Home';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+const queryClient = new QueryClient()
 
 export default function App() {
   return (
-    <SafeAreaView style={styles.container}>
-      <Home />
-    </SafeAreaView>
+    <QueryClientProvider client={queryClient}>
+      <SafeAreaView style={styles.container}>
+        <Home />
+      </SafeAreaView>
+    </QueryClientProvider>
   );
 }
 

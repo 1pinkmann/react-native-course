@@ -1,0 +1,1 @@
+export ANDROID_HOME=/mnt/c/Users/korgo/AppData/Local/Android/Sdk
