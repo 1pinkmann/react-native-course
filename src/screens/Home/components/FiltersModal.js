@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import { Platform, StyleSheet, Text, View } from 'react-native';
 import CustomModal from '../../../components/CustomModal';
 import CheckBox from 'expo-checkbox';
 import CustomPressable from '../../../components/CustomPressable';
@@ -24,6 +24,7 @@ const styles = StyleSheet.create({
   modalView: {
     width: 200,
     padding: 20,
+    paddingTop: Platform.OS === 'android' ? 20 : 50,
     backgroundColor: 'white',
     borderBottomRightRadius: 10,
     shadowColor: '#000',
