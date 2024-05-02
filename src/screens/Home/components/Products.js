@@ -15,7 +15,7 @@ export default function Products() {
   const [filterModalVisible, setFilterModalVisible] = useState(false);
   const [checked, setChecked] = useState(false);
   const { search, setSearch, searchVisible, toggleSearchVisible, handleFilter, filters } = useSearch();
-  const { products } = useProducts(search, filters);
+  const { products } = useProducts(1, search, filters);
 
   function toggleModalVisible() {
     setModalVisible(!modalVisible);
