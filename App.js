@@ -1,6 +1,7 @@
 import { Platform, SafeAreaView, StatusBar, StyleSheet } from 'react-native';
 import Home from './src/screens/Home/Home';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import Swiper from './src/screens/Swiper/Swiper';
 
 const queryClient = new QueryClient()
 
@@ -8,7 +9,8 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <SafeAreaView style={styles.container}>
-        <Home />
+        {/* <Home /> */}
+        <Swiper />
       </SafeAreaView>
     </QueryClientProvider>
   );

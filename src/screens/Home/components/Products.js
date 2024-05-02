@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { FlatList, StyleSheet, TextInput, View } from 'react-native'
 import ProductCard from './ProductCard';
-import usePizzas from '../hooks/usePizzas';
+import useProducts from '../hooks/useProducts';
 import CustomPressable from '../../../components/CustomPressable';
 import { AntDesign } from '@expo/vector-icons';
 import { colors } from '../../../constants';
@@ -15,7 +15,7 @@ export default function Products() {
   const [filterModalVisible, setFilterModalVisible] = useState(false);
   const [checked, setChecked] = useState(false);
   const { search, setSearch, searchVisible, toggleSearchVisible, handleFilter, filters } = useSearch();
-  const { products } = usePizzas(search, filters);
+  const { products } = useProducts(search, filters);
 
   function toggleModalVisible() {
     setModalVisible(!modalVisible);
