@@ -5,8 +5,7 @@ import useProducts from '../Home/hooks/useProducts';
 export default function Swiper() {
   const [refreshing, setRefreshing] = useState(false);
   const [refreshed, setRefreshed] = useState(false);
-  const [page, setPage] = useState(1);
-  const { products } = useProducts(page);
+  const { products, changePage } = useProducts(refreshing);
   const [activeIndex, setActiveIndex] = useState(0);
   const { width } = useWindowDimensions();
   const flatListRef = useRef(null);
@@ -16,10 +15,6 @@ export default function Swiper() {
     const { contentOffset, layoutMeasurement } = nativeEvent;
     const currentIndex = Math.round(contentOffset.x / layoutMeasurement.width);
     setActiveIndex(currentIndex);
-  }
-
-  const changePage = () => {
-    setPage(state => state === products.length - 1 ? state : state + 1);
   }
 
   const onRefresh = () => {
