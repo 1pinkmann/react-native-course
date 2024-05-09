@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchPizzas } from "../services/actions";
 import { useEffect, useState } from "react";
 
-export default function useProducts(refreshing, search, filters) {
+export default function useFetchProducts(refreshing, search, filters) {
   const [page, setPage] = useState(1);
   const { data: queryData, isLoading } = useQuery({
     queryKey: ['pizzas', search, filters, page, refreshing],

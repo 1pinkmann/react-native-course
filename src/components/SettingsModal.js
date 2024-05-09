@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Platform, StyleSheet, Switch, Text, View } from 'react-native';
-import CustomModal from '../../../components/CustomModal';
+import CustomModal from './CustomModal';
 import { Appearance } from 'react-native';
 
 export default function SettingsModal({ modalVisible, toggleModalVisible }) {

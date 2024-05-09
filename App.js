@@ -6,28 +6,38 @@ import { NavigationContainer } from '@react-navigation/native';
 import Swiper from './src/screens/Swiper/Swiper';
 import TabBarIcon from './src/components/TabBarIcon';
 import { colors } from './src/constants';
+import SettingsModal from './src/components/SettingsModal';
+import { useState } from 'react';
 
 const queryClient = new QueryClient();
 const Tab = createBottomTabNavigator();
 
 export default function App() {
+  const [settingsModalVisible, setSettingsModalVisible] = useState(false);
+
+  function toggleSettingsModalVisible() {
+    setSettingsModalVisible(!settingsModalVisible);
+  }
+
   return (
     <NavigationContainer>
       <QueryClientProvider client={queryClient}>
         <SafeAreaView style={styles.container}>
-          <Tab.Navigator 
+          <Tab.Navigator
             screenOptions={({ route }) => {
               return { 
                 headerShown: false, 
-                tabBarIcon: ({ focused }) => <TabBarIcon name={route.name} focused={focused} />,
+                tabBarIcon: () => <TabBarIcon />,
                 tabBarLabel: ({ focused }) => <Text style={styles.tabBarLabel(focused)}>{route.name}</Text>,
-                tabBarStyle: styles.tabBarStyle
+                tabBarStyle: styles.tabBarStyle,
+                unmountOnBlur: true
               }
             }}
           >
-            <Tab.Screen name="Home" component={Home} />
+            <Tab.Screen name="Home" children={(navigation) => <Home navigation={navigation} toggleSettingsModalVisible={toggleSettingsModalVisible} />} />
             <Tab.Screen name="Swiper" component={Swiper} />
           </Tab.Navigator>
+          <SettingsModal modalVisible={settingsModalVisible} toggleModalVisible={toggleSettingsModalVisible} />
         </SafeAreaView>
       </QueryClientProvider>
     </NavigationContainer>

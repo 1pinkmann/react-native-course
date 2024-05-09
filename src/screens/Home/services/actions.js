@@ -24,3 +24,8 @@ export async function fetchPizzas (page = 1, search, filters) {
     metaCount: response.data.length
   }
 }
+
+export async function fetchPizza (id) {
+  const response = await api.get(`${BASE_URL}/pizzas/${id}`);
+  return response.data;
+}
