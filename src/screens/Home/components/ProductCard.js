@@ -1,15 +1,17 @@
-import React, { useMemo, useState } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import { Alert, Image, Pressable, Share, StyleSheet, Text, View } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import HeartButton from '../../../components/HeartButton';
 import useColors from '../../../hooks/useColors';
 import { Entypo } from '@expo/vector-icons';
+import { NavigationContext } from '@react-navigation/native';
 
 export default function ProductCard({ product, style }) {
   const [saved, setSaved] = useState(false);
   const colors = useColors();
   const styles = useMemo(() => getStyles(colors), [colors]);
-
+  const navigation = useContext(NavigationContext);
+  console.warn(navigation);
   function toggleSaved() {
     setSaved(!saved);
   }

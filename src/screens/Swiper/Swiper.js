@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { View, StyleSheet, FlatList, useWindowDimensions, Image, RefreshControl, Text } from 'react-native';
 import useProducts from '../Home/hooks/useProducts';
+import withBackground from '../../components/withBackground';
 
-export default function Swiper() {
+function Swiper() {
   const [refreshing, setRefreshing] = useState(false);
   const [refreshed, setRefreshed] = useState(false);
   const { products, changePage } = useProducts(refreshing);
@@ -92,3 +93,5 @@ const styles = StyleSheet.create({
     marginHorizontal: 10
   })
 });
+
+export default withBackground(Swiper);

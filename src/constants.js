@@ -12,6 +12,8 @@ export const colors = {
   MAIN_BACKGROUND: { dark: '#393434', light: '#fff' },
   ICON: { dark: '#fff', light: '#000' },
   SHARE_ICON: '#000',
+  TAB_BAR_ITEM_FOCUSED: '#23bafe',
+  TAB_BAR_ITEM: 'rgba(0, 0, 0, 0.5)',
 }
 
 export const BASE_URL = 'https://6081ca5473292b0017cde2ef.mockapi.io/api/v1';

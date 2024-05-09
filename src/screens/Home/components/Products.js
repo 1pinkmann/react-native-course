@@ -112,7 +112,7 @@ const getStyles = (colors) => StyleSheet.create({
   container: {
     width: '100%',
     flex: 1,
-    paddingTop: 35
+    paddingTop: 35,
   },
   header: {
     height: 40,
