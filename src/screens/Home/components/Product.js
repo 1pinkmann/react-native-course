@@ -9,11 +9,11 @@ import useProduct from '../hooks/useProduct';
 import ProductPriceWrapper from '../../../components/Product/ProductPriceWrapper';
 import withBackground from '../../../components/withBackground';
 
-function Product({ navigation }) {
+function Product({ route }) {
   const { toggleSaved, saved } = useProduct();
   const colors = useColors();
   const styles = useMemo(() => getStyles(colors), [colors]);
-  const { id } = navigation.route.params;
+  const { id } = route.params;
   const { product, isLoading } = useFetchProduct(id);
 
   if (isLoading) {

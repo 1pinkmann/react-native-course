@@ -16,7 +16,7 @@ export default function Home({ toggleSettingsModalVisible }) {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Products" children={() => <Products toggleSettingsModalVisible={toggleSettingsModalVisible} />} />
-      <Stack.Screen name="Product" children={(navigation) => <Product navigation={navigation} />} options={getProductOptions} />
+      <Stack.Screen name="Product" component={Product} options={getProductOptions} />
       <Stack.Screen name="WishList" component={WishList} options={{ presentation: 'modal', animation: 'flip', cardStyle: { flex: 1, justifyContent: 'flex-end' } }} />
     </Stack.Navigator>
   )
