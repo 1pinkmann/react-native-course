@@ -1,9 +1,9 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import CustomPressable from '../../../components/CustomPressable';
 import { useNavigation } from '@react-navigation/native';
+import CustomPressable from '../components/CustomPressable';
 
-export default function WishList() {
+export default function WishListModal() {
   const { goBack } = useNavigation();
 
   return (

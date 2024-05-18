@@ -1,45 +1,33 @@
-import { Platform, SafeAreaView, StatusBar, StyleSheet, Text, } from 'react-native';
-import Home from './src/screens/Home/Home';
+import { Platform, SafeAreaView, StatusBar, StyleSheet } from 'react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
-import Swiper from './src/screens/Swiper/Swiper';
-import TabBarIcon from './src/components/TabBarIcon';
-import { colors } from './src/constants';
-import SettingsModal from './src/components/SettingsModal';
-import { useState } from 'react';
+import SettingsModal from './src/modals/SettingsModal';
+import { createStackNavigator } from '@react-navigation/stack';
+import RootTabNavigator from './src/components/RootTabNavigator';
+import SearchProvider from './src/contexts/SearchProvider';
+import FiltersModal from './src/modals/FiltersModal';
+import WishListModal from './src/modals/WishListModal';
 
 const queryClient = new QueryClient();
-const Tab = createBottomTabNavigator();
+const Stack = createStackNavigator();
 
 export default function App() {
-  const [settingsModalVisible, setSettingsModalVisible] = useState(false);
-
-  function toggleSettingsModalVisible() {
-    setSettingsModalVisible(!settingsModalVisible);
-  }
-
   return (
     <NavigationContainer>
-      <QueryClientProvider client={queryClient}>
-        <SafeAreaView style={styles.container}>
-          <Tab.Navigator
-            screenOptions={({ route }) => {
-              return { 
-                headerShown: false, 
-                tabBarIcon: () => <TabBarIcon />,
-                tabBarLabel: ({ focused }) => <Text style={styles.tabBarLabel(focused)}>{route.name}</Text>,
-                tabBarStyle: styles.tabBarStyle,
-                unmountOnBlur: true
-              }
-            }}
-          >
-            <Tab.Screen name="Home" children={(navigation) => <Home navigation={navigation} toggleSettingsModalVisible={toggleSettingsModalVisible} />} />
-            <Tab.Screen name="Swiper" component={Swiper} />
-          </Tab.Navigator>
-          <SettingsModal modalVisible={settingsModalVisible} toggleModalVisible={toggleSettingsModalVisible} />
-        </SafeAreaView>
-      </QueryClientProvider>
+      <SearchProvider>
+        <QueryClientProvider client={queryClient}>
+          <SafeAreaView style={styles.container}>
+            <Stack.Navigator initialRouteName="Root">
+              <Stack.Screen name="Root" component={RootTabNavigator} />
+              <Stack.Group screenOptions={{ presentation: 'modal', headerShown: false, animation: 'flip', cardStyle: { flex: 1, justifyContent: 'flex-end' } }}>
+                <Stack.Screen name="Settings" component={SettingsModal} options={{ presentation: 'transparentModal' }} />
+                <Stack.Screen name="WishList" component={WishListModal} />
+                <Stack.Screen name="Filters" component={FiltersModal} options={{ presentation: 'transparentModal' }} />
+              </Stack.Group>
+            </Stack.Navigator>
+          </SafeAreaView>
+        </QueryClientProvider>
+      </SearchProvider>
     </NavigationContainer>
   );
 }
@@ -48,17 +36,5 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0
-  },
-  tabBarLabel: (focused) => ({
-    color: focused ? colors.TAB_BAR_ITEM_FOCUSED : colors.TAB_BAR_ITEM,
-    fontSize: 12
-  }),
-  tabBarStyle: {
-    backgroundColor: '#FFFFFF',
-    borderTopWidth: 1,
-    borderColor: '#9EB1CA',
-    height: 56,
-    paddingBottom: 5,
-    paddingTop: 3,
   }
 });

@@ -2,11 +2,10 @@ import React from 'react';
 import Products from './components/Products';
 import { createStackNavigator } from '@react-navigation/stack';
 import Product from './components/Product';
-import WishList from './modals/WishList';
 
 const Stack = createStackNavigator();
 
-export default function Home({ toggleSettingsModalVisible }) {
+export default function Home() {
   function getProductOptions({ route }) {
     return {
       headerShown: true,
@@ -15,9 +14,8 @@ export default function Home({ toggleSettingsModalVisible }) {
   }
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="Products" children={() => <Products toggleSettingsModalVisible={toggleSettingsModalVisible} />} />
+      <Stack.Screen name="Products" component={Products} />
       <Stack.Screen name="Product" component={Product} options={getProductOptions} />
-      <Stack.Screen name="WishList" component={WishList} options={{ presentation: 'modal', animation: 'flip', cardStyle: { flex: 1, justifyContent: 'flex-end' } }} />
     </Stack.Navigator>
   )
 }

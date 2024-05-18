@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { useContext, useMemo, useState } from 'react'
 import { FlatList, Linking, RefreshControl, StyleSheet, TextInput, View } from 'react-native'
 import ProductCard from './ProductCard';
 import useFetchProducts from '../hooks/useFetchProducts';
@@ -8,30 +8,19 @@ import Fontisto from '@expo/vector-icons/Fontisto';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import Entypo from '@expo/vector-icons/Entypo';
 import HeartButton from '../../../components/HeartButton';
-import useSearch from '../hooks/useSearch';
-import FiltersModal from './FiltersModal';
 import useColors from '../../../hooks/useColors';
 import { useNavigation } from '@react-navigation/native';
 import withBackground from '../../../components/withBackground';
+import { SearchContext } from '../../../contexts/SearchProvider';
 
-function Products({ toggleSettingsModalVisible }) {
+function Products() {
+  const { searchContext } = useContext(SearchContext);
+  const { setSearch, search, searchVisible, toggleSearchVisible, filters, handleFilter } = searchContext;
   const [refreshing, setRefreshing] = useState(false);
-  const [filterModalVisible, setFilterModalVisible] = useState(false);
-  const [checked, setChecked] = useState(false);
-  const { search, setSearch, searchVisible, toggleSearchVisible, handleFilter, filters } = useSearch();
   const { products, changePage } = useFetchProducts(refreshing, search, filters);
   const colors = useColors();
   const styles = useMemo(() => getStyles(colors), [colors]);
   const { navigate } = useNavigation();
-
-  function toggleFiltersModalVisible() {
-    setFilterModalVisible((state) => {
-      if (state) {
-        handleFilter(checked, 'isNew', true)
-      }
-      return !state;
-    });
-  }
 
   function onRefresh() {
     setRefreshing(true);
@@ -44,8 +33,8 @@ function Products({ toggleSettingsModalVisible }) {
 
   }
 
-  function navigateToWishList() {
-    navigate('WishList');
+  function navigateToModal(route, params) {
+    navigate(route, params);
   }
 
   function onContactsPress(type) {
@@ -68,7 +57,7 @@ function Products({ toggleSettingsModalVisible }) {
         {searchVisible ?
           <TextInput value={search} onChangeText={setSearch} placeholder="Search..." style={styles.input} /> :
           <>
-            <CustomPressable style={styles.icon} onPress={() => toggleSettingsModalVisible()}>
+            <CustomPressable style={styles.icon} onPress={() => navigateToModal('Settings')}>
               <AntDesign name="setting" color={colors.ICON} size={24} />
             </CustomPressable>
             <CustomPressable style={styles.icon} onPress={() => onContactsPress('email')}>
@@ -82,8 +71,8 @@ function Products({ toggleSettingsModalVisible }) {
             </CustomPressable>
           </>
         }
-        <HeartButton style={styles.icon} onPress={navigateToWishList} active={true} />
-        <CustomPressable style={styles.icon} onPress={toggleFiltersModalVisible}>
+        <HeartButton style={styles.icon} onPress={() => navigateToModal('WishList')} active={true} />
+        <CustomPressable style={styles.icon} onPress={() => navigateToModal('Filters')}>
           <AntDesign name="filter" color={colors.ICON} size={24} />
         </CustomPressable>
         <CustomPressable style={styles.icon} onPress={toggleSearchVisible}>
@@ -96,7 +85,6 @@ function Products({ toggleSettingsModalVisible }) {
         onEndReached={changePage}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       />
-      <FiltersModal checked={checked} setChecked={setChecked} modalVisible={filterModalVisible} toggleModalVisible={toggleFiltersModalVisible} />
     </View>
   )
 }

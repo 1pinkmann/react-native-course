@@ -1,25 +1,26 @@
-import React, { useEffect } from 'react';
-import { Modal, StyleSheet } from 'react-native';
-import CustomPressable from './CustomPressable';
+import React from 'react';
+import { Pressable, StyleSheet, View } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
-export default function CustomModal({ modalVisible, toggleModalVisible, children }) {
+export default function CustomModal({ children }) {
+  const navigation = useNavigation();
+
+  function closeModal() {
+    navigation.goBack();
+  }
+
   return (
-    <Modal
-      animationType="slide"
-      transparent={true}
-      visible={modalVisible}
-      onRequestClose={() => toggleModalVisible}
-      style={styles.container}
-    >
-      <CustomPressable style={styles.trigger} onPress={toggleModalVisible} />
+    <View style={styles.container}>
+      <Pressable style={styles.trigger} onPress={closeModal} />
       {children}
-    </Modal>
+    </View>
   )
 }
 
 const styles = StyleSheet.create({
   container: {
-    position: 'relative'
+    position: 'relative',
+    flex: 1
   },
   trigger: {
     flex: 1,
