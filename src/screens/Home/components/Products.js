@@ -1,46 +1,26 @@
-import React, { useMemo, useState } from 'react'
+import React, { useContext, useMemo, useState } from 'react'
 import { FlatList, Linking, RefreshControl, StyleSheet, TextInput, View } from 'react-native'
 import ProductCard from './ProductCard';
-import useProducts from '../hooks/useProducts';
+import useFetchProducts from '../hooks/useFetchProducts';
 import CustomPressable from '../../../components/CustomPressable';
 import { AntDesign } from '@expo/vector-icons';
 import Fontisto from '@expo/vector-icons/Fontisto';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import Entypo from '@expo/vector-icons/Entypo';
 import HeartButton from '../../../components/HeartButton';
-import ModalWindow from './ModalWindow';
-import useSearch from '../hooks/useSearch';
-import FiltersModal from './FiltersModal';
 import useColors from '../../../hooks/useColors';
-import SettingsModal from './SettingsModal';
+import { useNavigation } from '@react-navigation/native';
+import withBackground from '../../../components/withBackground';
+import { SearchContext } from '../../../contexts/SearchProvider';
 
-export default function Products() {
-  const [settingsModalVisible, setSettingsModalVisible] = useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
+function Products() {
+  const { searchContext } = useContext(SearchContext);
+  const { setSearch, search, searchVisible, toggleSearchVisible, filters, handleFilter } = searchContext;
   const [refreshing, setRefreshing] = useState(false);
-  const [filterModalVisible, setFilterModalVisible] = useState(false);
-  const [checked, setChecked] = useState(false);
-  const { search, setSearch, searchVisible, toggleSearchVisible, handleFilter, filters } = useSearch();
-  const { products, changePage } = useProducts(refreshing, search, filters);
+  const { products, changePage } = useFetchProducts(refreshing, search, filters);
   const colors = useColors();
   const styles = useMemo(() => getStyles(colors), [colors]);
-
-  function toggleModalVisible() {
-    setModalVisible(!modalVisible);
-  }
-
-  function toggleFiltersModalVisible() {
-    setFilterModalVisible((state) => {
-      if (state) {
-        handleFilter(checked, 'isNew', true)
-      }
-      return !state;
-    });
-  }
-
-  function toggleSettingsModalVisible() {
-    setSettingsModalVisible(!settingsModalVisible);
-  }
+  const { navigate } = useNavigation();
 
   function onRefresh() {
     setRefreshing(true);
@@ -51,6 +31,10 @@ export default function Products() {
       setRefreshing(false);
     }, 3000);
 
+  }
+
+  function navigateToModal(route, params) {
+    navigate(route, params);
   }
 
   function onContactsPress(type) {
@@ -73,7 +57,7 @@ export default function Products() {
         {searchVisible ?
           <TextInput value={search} onChangeText={setSearch} placeholder="Search..." style={styles.input} /> :
           <>
-            <CustomPressable style={styles.icon} onPress={() => toggleSettingsModalVisible()}>
+            <CustomPressable style={styles.icon} onPress={() => navigateToModal('Settings')}>
               <AntDesign name="setting" color={colors.ICON} size={24} />
             </CustomPressable>
             <CustomPressable style={styles.icon} onPress={() => onContactsPress('email')}>
@@ -87,8 +71,8 @@ export default function Products() {
             </CustomPressable>
           </>
         }
-        <HeartButton style={styles.icon} onPress={toggleModalVisible} active={true} />
-        <CustomPressable style={styles.icon} onPress={toggleFiltersModalVisible}>
+        <HeartButton style={styles.icon} onPress={() => navigateToModal('WishList')} active={true} />
+        <CustomPressable style={styles.icon} onPress={() => navigateToModal('Filters')}>
           <AntDesign name="filter" color={colors.ICON} size={24} />
         </CustomPressable>
         <CustomPressable style={styles.icon} onPress={toggleSearchVisible}>
@@ -101,9 +85,6 @@ export default function Products() {
         onEndReached={changePage}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       />
-      <ModalWindow modalVisible={modalVisible} toggleModalVisible={toggleModalVisible} />
-      <FiltersModal checked={checked} setChecked={setChecked} modalVisible={filterModalVisible} toggleModalVisible={toggleFiltersModalVisible} />
-      <SettingsModal modalVisible={settingsModalVisible} toggleModalVisible={toggleSettingsModalVisible} />
     </View>
   )
 }
@@ -112,7 +93,7 @@ const getStyles = (colors) => StyleSheet.create({
   container: {
     width: '100%',
     flex: 1,
-    paddingTop: 35
+    paddingTop: 35,
   },
   header: {
     height: 40,
@@ -135,3 +116,5 @@ const getStyles = (colors) => StyleSheet.create({
     marginLeft: 10
   }
 });
+
+export default withBackground(Products);

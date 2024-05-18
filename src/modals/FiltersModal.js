@@ -1,12 +1,26 @@
-import React from 'react';
+import React, { useContext, useEffect } from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
-import CustomModal from '../../../components/CustomModal';
+import CustomModal from '../components/CustomModal';
 import CheckBox from 'expo-checkbox';
-import CustomPressable from '../../../components/CustomPressable';
+import CustomPressable from '../components/CustomPressable';
+import { SearchContext } from '../contexts/SearchProvider';
+import { useNavigation } from '@react-navigation/native';
 
-export default function FiltersModal({ checked, setChecked, modalVisible, toggleModalVisible }) {
+export default function FiltersModal() {
+  const { filtersContext, searchContext } = useContext(SearchContext);
+  const { checked, setChecked } = filtersContext;
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    const listener = navigation.addListener('beforeRemove', () => {
+      searchContext.handleFilter(checked, 'isNew', true)
+    });
+
+    return listener;
+  }, [searchContext.handleFilter]);
+
   return (
-    <CustomModal modalVisible={modalVisible} toggleModalVisible={toggleModalVisible}>
+    <CustomModal>
       <View style={styles.modalView}>
         <Text style={styles.title}>Filter</Text>
         <View style={styles.checkboxWrapper}>

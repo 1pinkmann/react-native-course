@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Platform, StyleSheet, Switch, Text, View } from 'react-native';
-import CustomModal from '../../../components/CustomModal';
 import { Appearance } from 'react-native';
+import CustomModal from '../components/CustomModal';
 
-export default function SettingsModal({ modalVisible, toggleModalVisible }) {
+export default function SettingsModal() {
   const [colorSchemeMode, setColorSchemeMode] = useState(null);
 
   function changeColorSchemeMode(value, isDefaultSwitch) {
@@ -22,7 +22,7 @@ export default function SettingsModal({ modalVisible, toggleModalVisible }) {
   }, [colorSchemeMode]);
 
   return (
-    <CustomModal modalVisible={modalVisible} toggleModalVisible={toggleModalVisible}>
+    <CustomModal>
       <View style={styles.modalView}>
         <Text style={styles.title}>Settings</Text>
         <View style={styles.wrapper}>
