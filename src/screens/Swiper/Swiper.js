@@ -1,12 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, StyleSheet, FlatList, useWindowDimensions, Image, RefreshControl, Text } from 'react-native';
-import useFetchProducts from '../Home/hooks/useFetchProducts';
+import { View, StyleSheet, FlatList, useWindowDimensions, Image, RefreshControl } from 'react-native';
 import withBackground from '../../components/withBackground';
+import { observer } from 'mobx-react';
+import ProductsStore from '../../stores/ProductsStore';
+
+const productsStore = new ProductsStore(); // Swiper must have its own state
 
 function Swiper() {
-  const [refreshing, setRefreshing] = useState(false);
-  const [refreshed, setRefreshed] = useState(false);
-  const { products, changePage } = useFetchProducts(refreshing);
+  const { refreshing, products, loadMore, onRefresh, loadProducts } = productsStore;
   const [activeIndex, setActiveIndex] = useState(0);
   const { width } = useWindowDimensions();
   const flatListRef = useRef(null);
@@ -16,15 +17,6 @@ function Swiper() {
     const { contentOffset, layoutMeasurement } = nativeEvent;
     const currentIndex = Math.round(contentOffset.x / layoutMeasurement.width);
     setActiveIndex(currentIndex);
-  }
-
-  const onRefresh = () => {
-    setRefreshing(true);
-
-    setTimeout(() => {
-      setRefreshed(true);
-      setRefreshing(false);
-    }, 3000);
   }
 
   useEffect(() => {
@@ -42,6 +34,10 @@ function Swiper() {
     }
   }, [activeIndex]);
 
+  useEffect(() => {
+    loadProducts(true);
+  }, []);
+
   return (
     <View style={styles.container}>
       <FlatList
@@ -52,7 +48,7 @@ function Swiper() {
         data={products}
         renderItem={({ item }) => <Image key={item.id} style={styles.item(width)} source={{ uri: item.image }} />}
         ref={flatListRef}
-        onEndReached={changePage}
+        onEndReached={loadMore}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       />
       <View style={styles.dotsContainer}>
@@ -60,9 +56,6 @@ function Swiper() {
           <View key={item.id} style={[styles.dot, activeIndex === index && styles.activeDot]} />
         ))}
       </View>
-      {refreshed &&
-        <Text>Refreshed</Text> // не уверен, что я правильно понял задание. С начала я подумал, что нужно добавлять еще один айтем в data, но в задании №3 говорится "має підзавантажувати 5 новий айтемів", а значит "Намокати обʼєкт який буде добавлятись через 3 секунди після початку рефреша" это что-то другое.
-      }
     </View>
   );
 };
@@ -94,4 +87,4 @@ const styles = StyleSheet.create({
   })
 });
 
-export default withBackground(Swiper);
+export default withBackground(observer(Swiper));

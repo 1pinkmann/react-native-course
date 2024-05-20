@@ -8,8 +8,9 @@ import ProductImageWrapper from '../../../components/Product/ProductImageWrapper
 import useProduct from '../hooks/useProduct';
 import ProductPriceWrapper from '../../../components/Product/ProductPriceWrapper';
 import withBackground from '../../../components/withBackground';
+import { inject, observer } from 'mobx-react';
 
-function Product({ route }) {
+function Product({ route, orderStore }) {
   const { toggleSaved, saved } = useProduct();
   const colors = useColors();
   const styles = useMemo(() => getStyles(colors), [colors]);
@@ -33,7 +34,7 @@ function Product({ route }) {
         <ProductPriceWrapper product={product} />
         <Text style={[styles.description, styles.textColor]}>{product.description}</Text>
       </View>
-      <Pressable style={styles.button}>
+      <Pressable style={styles.button} onPress={() => orderStore.addOrder(product.id)}>
         <Text style={styles.buttonColor}>Buy</Text>
         <AntDesign name="shoppingcart" size={24} color={styles.buttonColor.color} />
       </Pressable>
@@ -111,4 +112,4 @@ const getStyles = (colors) => StyleSheet.create({
   }
 });
 
-export default withBackground(Product);
+export default inject(({ stores }) => ({ orderStore: stores.orderStore }))(observer(withBackground(Product)));

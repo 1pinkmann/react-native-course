@@ -3,7 +3,7 @@ import { Alert, Image, Pressable, Share, StyleSheet, Text, View } from 'react-na
 import useColors from '../../hooks/useColors';
 import { Entypo } from '@expo/vector-icons';
 
-export default function ProductImageWrapper({ customStyles, product, shareIconSize = 12 }) {
+export default function ProductImageWrapper({ customStyles, product, shareIconSize = 12, shareShown = true }) {
   const colors = useColors();
   const styles = useMemo(() => getStyles(colors), [colors]);
 
@@ -38,9 +38,11 @@ export default function ProductImageWrapper({ customStyles, product, shareIconSi
           <Text style={combineStyles('badgeText')}>New</Text>
         </View>
       }
-      <Pressable style={combineStyles('share')}>
-        <Entypo name="share-alternative" size={shareIconSize} color={colors.SHARE_ICON} onPress={onSharePress} />
-      </Pressable>
+      {shareShown &&
+        <Pressable style={combineStyles('share')}>
+          <Entypo name="share-alternative" size={shareIconSize} color={colors.SHARE_ICON} onPress={onSharePress} />
+        </Pressable>
+      }
       <Image style={styles.image} source={{ uri: product.image }} />
     </View>
   )
