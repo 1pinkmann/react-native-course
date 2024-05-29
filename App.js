@@ -7,27 +7,38 @@ import RootTabNavigator from './src/components/RootTabNavigator';
 import SearchProvider from './src/contexts/SearchProvider';
 import FiltersModal from './src/modals/FiltersModal';
 import WishListModal from './src/modals/WishListModal';
+import { Provider } from 'mobx-react';
+import RootStore from './src/stores/RootStore';
+import { useEffect } from 'react';
 
 const queryClient = new QueryClient();
 const Stack = createStackNavigator();
 
 export default function App() {
+  const stores = RootStore();
+
+  useEffect(() => {
+    stores.productsStore.loadProducts();
+  }, []);
+
   return (
     <NavigationContainer>
-      <SearchProvider>
-        <QueryClientProvider client={queryClient}>
-          <SafeAreaView style={styles.container}>
-            <Stack.Navigator initialRouteName="Root">
-              <Stack.Screen name="Root" component={RootTabNavigator} />
-              <Stack.Group screenOptions={{ presentation: 'modal', headerShown: false, animation: 'flip', cardStyle: { flex: 1, justifyContent: 'flex-end' } }}>
-                <Stack.Screen name="Settings" component={SettingsModal} options={{ presentation: 'transparentModal' }} />
-                <Stack.Screen name="WishList" component={WishListModal} />
-                <Stack.Screen name="Filters" component={FiltersModal} options={{ presentation: 'transparentModal' }} />
-              </Stack.Group>
-            </Stack.Navigator>
-          </SafeAreaView>
-        </QueryClientProvider>
-      </SearchProvider>
+      <Provider stores={stores}>
+        <SearchProvider>
+          <QueryClientProvider client={queryClient}>
+            <SafeAreaView style={styles.container}>
+              <Stack.Navigator initialRouteName="Root" screenOptions={{ headerShown: false }}>
+                <Stack.Screen name="Root" component={RootTabNavigator} />
+                <Stack.Group screenOptions={{ presentation: 'modal', headerShown: false, animation: 'flip', cardStyle: { flex: 1, justifyContent: 'flex-end' } }}>
+                  <Stack.Screen name="Settings" component={SettingsModal} options={{ presentation: 'transparentModal' }} />
+                  <Stack.Screen name="WishList" component={WishListModal} />
+                  <Stack.Screen name="Filters" component={FiltersModal} options={{ presentation: 'transparentModal' }} />
+                </Stack.Group>
+              </Stack.Navigator>
+            </SafeAreaView>
+          </QueryClientProvider>
+        </SearchProvider>
+      </Provider>
     </NavigationContainer>
   );
 }

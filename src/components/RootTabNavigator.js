@@ -5,10 +5,14 @@ import TabBarIcon from './TabBarIcon';
 import { StyleSheet, Text } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { colors } from '../constants';
+import Cart from '../screens/Cart/Cart';
+import { inject, observer } from 'mobx-react';
 
 const Tab = createBottomTabNavigator();
 
-export default function RootTabNavigator() {
+function RootTabNavigator({ orderStore }) {
+  const ordersCount = orderStore.orders.length;
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => {
@@ -17,12 +21,14 @@ export default function RootTabNavigator() {
           tabBarIcon: () => <TabBarIcon />,
           tabBarLabel: ({ focused }) => <Text style={styles.tabBarLabel(focused)}>{route.name}</Text>,
           tabBarStyle: styles.tabBarStyle,
-          unmountOnBlur: true
+          unmountOnBlur: true,
+          tabBarBadge: route.name === 'Cart' && ordersCount > 0 ? ordersCount : null,
         }
       }}
     >
       <Tab.Screen name="Home" children={(navigation) => <Home navigation={navigation} />} />
       <Tab.Screen name="Swiper" component={Swiper} />
+      <Tab.Screen name="Cart" component={Cart} options={{ headerShown: true }} />
     </Tab.Navigator>
   )
 }
@@ -41,3 +47,5 @@ const styles = StyleSheet.create({
     paddingTop: 3,
   }
 });
+
+export default inject(({ stores }) => ({ orderStore: stores.orderStore }))(observer(RootTabNavigator));

@@ -1,31 +1,30 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
 import CustomModal from '../components/CustomModal';
 import CheckBox from 'expo-checkbox';
 import CustomPressable from '../components/CustomPressable';
-import { SearchContext } from '../contexts/SearchProvider';
 import { useNavigation } from '@react-navigation/native';
+import { inject, observer } from 'mobx-react';
 
-export default function FiltersModal() {
-  const { filtersContext, searchContext } = useContext(SearchContext);
-  const { checked, setChecked } = filtersContext;
+function FiltersModal({ productsStore }) {
+  const { newOnlyChecked, setNewOnlyChecked, handleFilter } = productsStore;
   const navigation = useNavigation();
 
   useEffect(() => {
     const listener = navigation.addListener('beforeRemove', () => {
-      searchContext.handleFilter(checked, 'isNew', true)
+      handleFilter(newOnlyChecked, 'isNew', true)
     });
 
     return listener;
-  }, [searchContext.handleFilter]);
+  }, [handleFilter, newOnlyChecked]);
 
   return (
     <CustomModal>
       <View style={styles.modalView}>
         <Text style={styles.title}>Filter</Text>
         <View style={styles.checkboxWrapper}>
-          <CheckBox value={checked} onValueChange={setChecked} />
-          <CustomPressable onPress={() => setChecked(!checked)}>
+          <CheckBox value={newOnlyChecked} onValueChange={setNewOnlyChecked} />
+          <CustomPressable onPress={() => setNewOnlyChecked(!newOnlyChecked)}>
             <Text style={styles.checkboxText}>Only new</Text>
           </CustomPressable>
         </View>
@@ -62,3 +61,5 @@ const styles = StyleSheet.create({
     marginLeft: 10
   }
 });
+
+export default inject(({ stores }) => ({ productsStore: stores.productsStore }))(observer(FiltersModal));

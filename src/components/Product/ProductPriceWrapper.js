@@ -2,15 +2,15 @@ import React, { useMemo } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import useColors from '../../hooks/useColors';
 
-export default function ProductPriceWrapper({ product }) {
+export default function ProductPriceWrapper({ product, textColor }) {
   const colors = useColors();
   const styles = useMemo(() => getStyles(colors), [colors]);
 
   return (
     <View style={styles.priceWrapper}>
-      <Text style={[styles.price, styles.textColor]}>{product.price}</Text>
+      <Text style={[styles.price, styles.textColor(textColor)]}>${product.price}</Text>
       {product.oldPrice &&
-        <Text style={[styles.priceOld, styles.textColor]}>{product.oldPrice}</Text>
+        <Text style={[styles.priceOld, styles.textColor(textColor)]}>${product.oldPrice}</Text>
       }
     </View>
   )
@@ -25,9 +25,9 @@ const getStyles = (colors) => StyleSheet.create({
   price: {
     fontWeight: '700'
   },
-  textColor: {
-    color: colors.TEXT
-  },
+  textColor: (color) => ({
+    color: color || colors.TEXT
+  }),
   priceOld: {
     marginLeft: 10,
     textDecorationLine: 'line-through',

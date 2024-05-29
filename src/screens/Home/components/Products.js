@@ -1,7 +1,6 @@
-import React, { useContext, useMemo, useState } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { FlatList, Linking, RefreshControl, StyleSheet, TextInput, View } from 'react-native'
 import ProductCard from './ProductCard';
-import useFetchProducts from '../hooks/useFetchProducts';
 import CustomPressable from '../../../components/CustomPressable';
 import { AntDesign } from '@expo/vector-icons';
 import Fontisto from '@expo/vector-icons/Fontisto';
@@ -11,27 +10,13 @@ import HeartButton from '../../../components/HeartButton';
 import useColors from '../../../hooks/useColors';
 import { useNavigation } from '@react-navigation/native';
 import withBackground from '../../../components/withBackground';
-import { SearchContext } from '../../../contexts/SearchProvider';
+import { inject, observer } from 'mobx-react';
 
-function Products() {
-  const { searchContext } = useContext(SearchContext);
-  const { setSearch, search, searchVisible, toggleSearchVisible, filters, handleFilter } = searchContext;
-  const [refreshing, setRefreshing] = useState(false);
-  const { products, changePage } = useFetchProducts(refreshing, search, filters);
+function Products({ productsStore }) {
+  const { products, refreshing, setSearch, search, searchVisible, toggleSearchVisible, loadMore, onRefresh } = productsStore;
   const colors = useColors();
   const styles = useMemo(() => getStyles(colors), [colors]);
   const { navigate } = useNavigation();
-
-  function onRefresh() {
-    setRefreshing(true);
-    handleFilter(false, 'isNew');
-    setSearch('');
-
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 3000);
-
-  }
 
   function navigateToModal(route, params) {
     navigate(route, params);
@@ -82,7 +67,7 @@ function Products() {
       <FlatList
         data={products}
         renderItem={({ item }) => <ProductCard product={item} key={item.id} />}
-        onEndReached={changePage}
+        onEndReached={loadMore}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       />
     </View>
@@ -117,4 +102,4 @@ const getStyles = (colors) => StyleSheet.create({
   }
 });
 
-export default withBackground(Products);
+export default inject(({ stores }) => ({ productsStore: stores.productsStore }))(withBackground(observer(Products)));

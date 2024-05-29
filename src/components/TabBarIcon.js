@@ -6,7 +6,8 @@ import { useIsFocused, useRoute } from '@react-navigation/native';
 
 const map = {
   Home: (props) => <AntDesign name="home" {...props} />,
-  Swiper: (props) => <MaterialCommunityIcons name="view-gallery-outline" {...props} />
+  Swiper: (props) => <MaterialCommunityIcons name="view-gallery-outline" {...props} />,
+  Cart: (props) => <AntDesign name="shoppingcart" {...props} />,
 }
 
 export default function TabBarIcon() {

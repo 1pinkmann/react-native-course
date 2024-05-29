@@ -3,12 +3,13 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import HeartButton from '../../../components/HeartButton';
 import useColors from '../../../hooks/useColors';
-import { NavigationContext, useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import ProductImageWrapper from '../../../components/Product/ProductImageWrapper';
 import useProduct from '../hooks/useProduct';
 import ProductPriceWrapper from '../../../components/Product/ProductPriceWrapper';
+import { inject, observer } from 'mobx-react';
 
-export default function ProductCard({ product, style }) {
+function ProductCard({ product, style, orderStore }) {
   const { toggleSaved, saved } = useProduct();
   const colors = useColors();
   const styles = useMemo(() => getStyles(colors), [colors]);
@@ -19,19 +20,19 @@ export default function ProductCard({ product, style }) {
   }
 
   return (
-    <View style={[styles.container, style]}>
+    <Pressable style={[styles.container, style]} onPress={navigateToProduct}>
       <ProductImageWrapper product={product} />
       <View style={styles.wrapper}>
         <Text style={[styles.title, styles.textColor]}>{product.title}</Text>
         <HeartButton onPress={toggleSaved} active={saved} />
         <ProductPriceWrapper product={product} />
         <Text numberOfLines={1} ellipsizeMode='tail' style={[styles.description, styles.textColor]}>{product.description}</Text>
-        <Pressable style={styles.button} onPress={navigateToProduct}>
+        <Pressable style={styles.button} onPress={() => orderStore.addOrder(product.id)}>
           <Text style={[styles.buttonText, styles.textColor]}>Buy</Text>
           <AntDesign name="shoppingcart" size={24} color={colors.ICON} />
         </Pressable>
       </View>
-    </View>
+    </Pressable>
   )
 }
 
@@ -90,3 +91,5 @@ const getStyles = (colors) => StyleSheet.create({
     maxWidth: 150
   },
 });
+
+export default inject(({ stores }) => ({ orderStore: stores.orderStore }))(observer(ProductCard));
