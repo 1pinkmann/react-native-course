@@ -7,7 +7,8 @@ module.exports = function(api) {
       ['@babel/plugin-proposal-class-properties'],
       ['@babel/plugin-transform-class-properties', { loose: true }],
       ['@babel/plugin-transform-private-methods'],
-      ['@babel/plugin-transform-private-property-in-object']
+      ['@babel/plugin-transform-private-property-in-object'],
+      'react-native-reanimated/plugin'
     ],
     assumptions: {
       setPublicClassFields: false

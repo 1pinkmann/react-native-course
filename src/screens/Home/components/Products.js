@@ -1,80 +1,36 @@
-import React, { useEffect, useMemo } from 'react'
-import { FlatList, Linking, RefreshControl, StyleSheet, TextInput, View } from 'react-native'
+import React, { useContext } from 'react'
+import { RefreshControl, StyleSheet, View } from 'react-native'
 import ProductCard from './ProductCard';
-import CustomPressable from '../../../components/CustomPressable';
-import { AntDesign } from '@expo/vector-icons';
-import Fontisto from '@expo/vector-icons/Fontisto';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import Entypo from '@expo/vector-icons/Entypo';
-import HeartButton from '../../../components/HeartButton';
-import useColors from '../../../hooks/useColors';
-import { useNavigation } from '@react-navigation/native';
 import withBackground from '../../../components/withBackground';
 import { inject, observer } from 'mobx-react';
+import Header from './Header';
+import Animated, { interpolate, useAnimatedStyle } from 'react-native-reanimated';
+import { HeaderAnimationContext } from '../contexts/HeaderAnimationContext';
 
 function Products({ productsStore }) {
-  const { products, refreshing, setSearch, search, searchVisible, toggleSearchVisible, loadMore, onRefresh } = productsStore;
-  const colors = useColors();
-  const styles = useMemo(() => getStyles(colors), [colors]);
-  const { navigate } = useNavigation();
+  const { products, refreshing, loadMore, onRefresh } = productsStore;
+  const { scrollOffset, onScrollHandler } = useContext(HeaderAnimationContext);
 
-  function navigateToModal(route, params) {
-    navigate(route, params);
-  }
-
-  function onContactsPress(type) {
-    const actions = {
-      email: 'mailto',
-      phone: 'tel',
-      web: 'https'
-    };
-    const endpoints = {
-      email: 'email@icloud.com',
-      phone: '123456789',
-      web: 'https://google.com'
-    };
-    Linking.openURL(`${actions[type]}:${endpoints[type]}`);
-  }
+  const animatedHeaderStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(scrollOffset.value, [0, 100], [1, 0], 'clamp'),
+    height: interpolate(scrollOffset.value, [0, 100], [60, 0], 'clamp'),
+  }));
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        {searchVisible ?
-          <TextInput value={search} onChangeText={setSearch} placeholder="Search..." style={styles.input} /> :
-          <>
-            <CustomPressable style={styles.icon} onPress={() => navigateToModal('Settings')}>
-              <AntDesign name="setting" color={colors.ICON} size={24} />
-            </CustomPressable>
-            <CustomPressable style={styles.icon} onPress={() => onContactsPress('email')}>
-              <Fontisto name="email" color={colors.ICON} size={24} />
-            </CustomPressable>
-            <CustomPressable style={styles.icon} onPress={() => onContactsPress('phone')}>
-              <Entypo name="phone" color={colors.ICON} size={24} />
-            </CustomPressable>
-            <CustomPressable style={styles.icon} onPress={() => onContactsPress('web')}>
-              <MaterialCommunityIcons name="web" color={colors.ICON} size={24} />
-            </CustomPressable>
-          </>
-        }
-        <HeartButton style={styles.icon} onPress={() => navigateToModal('WishList')} active={true} />
-        <CustomPressable style={styles.icon} onPress={() => navigateToModal('Filters')}>
-          <AntDesign name="filter" color={colors.ICON} size={24} />
-        </CustomPressable>
-        <CustomPressable style={styles.icon} onPress={toggleSearchVisible}>
-          <AntDesign name="search1" color={colors.ICON} size={24} />
-        </CustomPressable>
-      </View>
-      <FlatList
+      <Header style={animatedHeaderStyle} />
+      <Animated.FlatList
         data={products}
         renderItem={({ item }) => <ProductCard product={item} key={item.id} />}
         onEndReached={loadMore}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+        onScroll={onScrollHandler}
       />
     </View>
   )
 }
 
-const getStyles = (colors) => StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     width: '100%',
     flex: 1,
@@ -87,15 +43,6 @@ const getStyles = (colors) => StyleSheet.create({
     flexDirection: 'row',
     marginHorizontal: 15,
     marginBottom: 20
-  },
-  input: {
-    flex: 1,
-    paddingHorizontal: 15,
-    borderColor: colors.BORDER,
-    borderWidth: 1,
-    backgroundColor: colors.GREY,
-    borderRadius: 5,
-    height: '100%'
   },
   icon: {
     marginLeft: 10
